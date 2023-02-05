@@ -24,9 +24,10 @@ let formValidation = () => {
 
 
          //IIFE
-        (() =>{
+        let addAttribute = () =>{
             add.setAttribute("data-bs-dismiss", "")
-        })()    
+        }
+        addAttribute()
        
     }
 }
@@ -52,19 +53,23 @@ let acceptData = () => {
 }
 
 let createTasks = () =>{
-    tasks.innerHTML += 
-    `
-    <div>
-          <span class="fw-bold">${data.text}</span>
-          <span class="small text-secondary">${data.date}</span>
-          <p>${data.description}</p>
-  
-          <span class="options">
-            <i onClick= "editTask(this)" data-bs-toggle="modal" data-bs-target="#form" class="fas fa-edit"></i>
-            <i onClick ="deleteTask(this);createTasks()" class="fas fa-trash-alt"></i>
-          </span>
-        </div>
-    `
+    tasks.innerHTML = ""
+    data.map((x, y)=>{
+        return (tasks.innerHTML += 
+            `
+            <div id=${y}>
+                  <span class="fw-bold">${x.text}</span>
+                  <span class="small text-secondary">${x.date}</span>
+                  <p>${x.description}</p>
+          
+                  <span class="options">
+                    <i onClick= "editTask(this)" data-bs-toggle="modal" data-bs-target="#form" class="fas fa-edit"></i>
+                    <i onClick ="deleteTask(this);createTasks()" class="fas fa-trash-alt"></i>
+                  </span>
+                </div>
+            `)
+    })
+    
     resetForm()
     // textInput.value = ''
     // dateInput.value = ''
@@ -79,8 +84,9 @@ let resetForm = () => {
 
 
 let deleteTask = (e)=> {
-    e.parentElement.parentElement.remove()
-
+    e.parentElement.parentElement.remove() 
+    data.splice(e.parentElement.parentElement.id, 1)
+    localStorage.setItem("data", JSON.stringify(data))
 }
 
 let editTask = (e) => {
@@ -89,7 +95,14 @@ let editTask = (e) => {
     dateInput.value = selectedTask.children[1].innerHTML
     textArea.value = selectedTask.children[2].innerHTML
 
-    selectedTask.remove()
+    deleteTask(e)
 }
 
 
+ function getData () {
+    data = JSON.parse(localStorage.getItem("data"))
+    console.log(data)
+    createTasks()
+ }
+
+ getData()
